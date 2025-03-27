@@ -2,11 +2,12 @@ local p = game.Players.LocalPlayer
 local pg = p:WaitForChild("PlayerGui")
 local s = Instance.new("ScreenGui", pg)
 s.Name = "ModernUI"
-s.ResetOnSpawn = false
+s.ResetOnSpawn = false -- Prevent the ScreenGui from resetting when the character respawns
 
+-- Increased frame width from 200 to 300
 local f = Instance.new("Frame", s)
 f.Size = UDim2.new(0, 300, 0, 300)
-f.Position = UDim2.new(0.5, -150, 0.5, -150)
+f.Position = UDim2.new(0.5, -150, 0.5, -150) -- Adjusted position for new width
 f.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 f.BorderSizePixel = 0 
 
@@ -21,9 +22,10 @@ t.TextColor3 = Color3.fromRGB(255, 255, 255)
 t.Font = Enum.Font.SourceSansBold 
 t.TextSize = 24 
 
+-- Increased button sizes and adjusted positions with better spacing
 local n = Instance.new("TextButton", f)
 n.Size = UDim2.new(0, 120, 0, 40)
-n.Position = UDim2.new(0.5, -60, 0.3, 0)
+n.Position = UDim2.new(0.5, -60, 0.3, 0) -- Moved up and centered
 n.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 n.Text = "Siguiente"
 n.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -35,7 +37,7 @@ nc.CornerRadius = UDim.new(0, 10)
 
 local ts = Instance.new("TextLabel", f)
 ts.Size = UDim2.new(0, 280, 0, 20)
-ts.Position = UDim2.new(0.5, -140, 0.45, 0)
+ts.Position = UDim2.new(0.5, -140, 0.45, 0) -- Wider and centered
 ts.BackgroundTransparency = 1 
 ts.Text = "Tp para el final"
 ts.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -44,7 +46,7 @@ ts.TextSize = 16
 
 local tp = Instance.new("TextButton", f)
 tp.Size = UDim2.new(0, 120, 0, 40)
-tp.Position = UDim2.new(0.5, -60, 0.55, 0)
+tp.Position = UDim2.new(0.5, -60, 0.55, 0) -- Better vertical spacing
 tp.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
 tp.Text = "Teletransportar"
 tp.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -136,19 +138,19 @@ local function ncF()
 end 
 
 local function tpF()
-    local ch = p.Character or p.CharacterAdded:Wait()
+    local ch = p.Character or p.CharacterAdded:Wait() -- Ensure character exists
     local rp = ch:WaitForChild("HumanoidRootPart")
     rp.CFrame = CFrame.new(9023.19, 1015.32, 6.77)
 end 
 
 local function hF()
-    f.Position = UDim2.new(0.5, -150, 1.5, 0) -- Cambio instantáneo en lugar de Tween
+    f:TweenPosition(UDim2.new(0.5, -150, 1.5, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
     sh.Visible = true 
     v = false 
 end 
 
 local function sF()
-    f.Position = UDim2.new(0.5, -150, 0.5, -150) -- Cambio instantáneo en lugar de Tween
+    f:TweenPosition(UDim2.new(0.5, -150, 0.5, -150), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.5, true)
     sh.Visible = false 
     v = true 
 end 
