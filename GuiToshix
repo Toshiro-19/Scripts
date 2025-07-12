@@ -1,0 +1,235 @@
+-- JumpTowerMenuModule (ModuleScript en ReplicatedStorage)
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local function createGui(player, customOptions)
+    local playerGui = player:WaitForChild("PlayerGui")
+
+    -- Remove existing GUI
+    local existingGui = playerGui:FindFirstChild("GuiToshix")
+    if existingGui then
+        existingGui:Destroy()
+    end
+
+    -- Create new GUI
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "JumpTowerMenu"
+    gui.ResetOnSpawn = false
+    gui.Parent = playerGui
+
+    -- Sizes
+    local collapsedHeight = 36
+    local dropdownHeight = 145
+    local totalExpandedHeight = collapsedHeight + dropdownHeight
+
+    -- Main Frame
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Name = "MainFrame"
+    mainFrame.Size = UDim2.new(0, 220, 0, collapsedHeight)
+    mainFrame.Position = UDim2.new(0, 5, 0, 5)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    mainFrame.BorderSizePixel = 0
+    mainFrame.ClipsDescendants = true
+    mainFrame.Parent = gui
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = mainFrame
+
+    -- Title
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(0.7, 0, 0, collapsedHeight)
+    title.Position = UDim2.new(0, 12, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = "CLIMB AND JUMP TOWER"
+    title.Font = Enum.Font.GothamBold
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextSize = 13
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.TextYAlignment = Enum.TextYAlignment.Center
+    title.ZIndex = 2
+    title.Parent = mainFrame
+
+    -- Toggle Button
+    local toggleButton = Instance.new("TextButton")
+    toggleButton.Size = UDim2.new(0, 30, 0, 30)
+    toggleButton.Position = UDim2.new(1, -36, 0, 3)
+    toggleButton.BackgroundTransparency = 1
+    toggleButton.Text = "▼"
+    toggleButton.Font = Enum.Font.GothamBold
+    toggleButton.TextColor3 = Color3.fromRGB(200, 200, 200)
+    toggleButton.TextSize = 18
+    toggleButton.ZIndex = 2
+    toggleButton.Parent = mainFrame
+
+    -- Dropdown
+    local dropdown = Instance.new("Frame")
+    dropdown.Name = "Dropdown"
+    dropdown.Size = UDim2.new(1, 0, 0, dropdownHeight)
+    dropdown.Position = UDim2.new(0, 0, 0, collapsedHeight)
+    dropdown.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    dropdown.BorderSizePixel = 0
+    dropdown.Visible = false
+    dropdown.ZIndex = 1
+    dropdown.Parent = mainFrame
+
+    local dropdownCorner = Instance.new("UICorner")
+    dropdownCorner.CornerRadius = UDim.new(0, 8)
+    dropdownCorner.Parent = dropdown
+
+    -- Options (use customOptions if provided, otherwise default)
+    local options = customOptions or {
+        { name = "Auto Coins", func = function(isActive) end },
+        { name = "Auto Wins", func = function(isActive) end },
+        { name = "Auto Hatch (Nearest)", func = function(isActive) end },
+    }
+
+    local toggles = {} -- Store toggle states and functions
+    for i, option in ipairs(options) do
+        local optionName = option.name
+        local optionFunc = option.func or function(isActive) end
+
+        local optionFrame = Instance.new("Frame")
+        optionFrame.Size = UDim2.new(1, -10, 0, 30)
+        optionFrame.Position = UDim2.new(0, 5, 0, (i - 1) * 35 + 5)
+        optionFrame.BackgroundTransparency = 1
+        optionFrame.Parent = dropdown
+
+        local label = Instance.new("TextLabel")
+        label.Size = UDim2.new(1, -45, 1, 0)
+        label.Position = UDim2.new(0, 5, 0, 0)
+        label.BackgroundTransparency = 1
+        label.Text = optionName
+        label.Font = Enum.Font.Gotham
+        label.TextColor3 = Color3.fromRGB(220, 220, 220)
+        label.TextSize = 13
+        label.TextXAlignment = Enum.TextXAlignment.Left
+        label.TextYAlignment = Enum.TextYAlignment.Center
+        label.Parent = optionFrame
+
+        local checkboxFrame = Instance.new("Frame")
+        checkboxFrame.Size = UDim2.new(0, 28, 0, 16)
+        checkboxFrame.Position = UDim2.new(1, -33, 0.5, -8)
+        checkboxFrame.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+        checkboxFrame.BorderSizePixel = 0
+        checkboxFrame.Parent = optionFrame
+
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(1, 0)
+        corner.Parent = checkboxFrame
+
+        local checkbox = Instance.new("TextButton")
+        checkbox.Size = UDim2.new(0.5, -2, 1, -2)
+        checkbox.Position = UDim2.new(0, 2, 0, 1)
+        checkbox.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
+        checkbox.BorderSizePixel = 0
+        checkbox.Text = ""
+        checkbox.Name = "Toggle"
+        checkbox.Parent = checkboxFrame
+
+        local checkCorner = Instance.new("UICorner")
+        checkCorner.CornerRadius = UDim.new(1, 0)
+        checkCorner.Parent = checkbox
+
+        local isActive = false
+        toggles[optionName] = { button = checkbox, active = isActive, func = optionFunc }
+        checkbox.MouseButton1Click:Connect(function()
+            isActive = not isActive
+            toggles[optionName].active = isActive
+            checkbox:TweenPosition(
+                UDim2.new(isActive and 0.5 or 0, 2, 0, 1),
+                Enum.EasingDirection.Out,
+                Enum.EasingStyle.Quad,
+                0.2,
+                true
+            )
+            checkbox.BackgroundColor3 = isActive and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(80, 80, 80)
+            optionFunc(isActive) -- Call the associated function
+        end)
+    end
+
+    -- YouTube Label
+    local ytLabel = Instance.new("TextLabel")
+    ytLabel.Size = UDim2.new(1, -10, 0, 25)
+    ytLabel.Position = UDim2.new(0, 5, 0, #options * 35 + 5)
+    ytLabel.BackgroundTransparency = 1
+    ytLabel.Text = "YouTube: Toshix"
+    ytLabel.Font = Enum.Font.GothamSemibold
+    ytLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    ytLabel.TextSize = 12
+    ytLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ytLabel.Parent = dropdown
+
+    -- Toggle functionality
+    local isExpanded = false
+    toggleButton.MouseButton1Click:Connect(function()
+        isExpanded = not isExpanded
+        dropdown.Visible = isExpanded
+        toggleButton.Text = isExpanded and "▲" or "▼"
+        mainFrame:TweenSize(
+            UDim2.new(0, 220, 0, isExpanded and totalExpandedHeight or collapsedHeight),
+            Enum.EasingDirection.Out,
+            Enum.EasingStyle.Quad,
+            0.2,
+            true
+        )
+    end)
+
+    -- Drag functionality
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+
+    mainFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = mainFrame.Position
+        end
+    end)
+
+    mainFrame.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            mainFrame.Position = UDim2.new(
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+            )
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+        end
+    end)
+
+    -- Mobile scaling
+    local function updateScale()
+        local viewportSize = game.Workspace.CurrentCamera.ViewportSize
+        local scale = math.min(1, viewportSize.X / 600)
+        if gui:FindFirstChild("UIScale") then
+            gui.UIScale.Scale = scale
+        else
+            local uiScale = Instance.new("UIScale")
+            uiScale.Scale = scale
+            uiScale.Parent = gui
+        end
+    end
+
+    game.Workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale)
+    updateScale()
+
+    -- Return toggle states and GUI
+    return {
+        Gui = gui,
+        Toggles = toggles,
+        GetToggleState = function(optionName)
+            return toggles[optionName] and toggles[optionName].active or false
+        end
+    }
+end
+
+return createGui
