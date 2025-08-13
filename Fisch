@@ -93,7 +93,7 @@ local function createGui(scriptUrl1, scriptUrl2)
 end
 
 -- URLs de los scripts
-local scriptUrl1 = "https://raw.githubusercontent.com/62883/Tsg/refs/heads/main/Toshi%20X%20-%20comunity.lua.txt"
-local scriptUrl2 = "https://raw.githubusercontent.com/by-titan/Scripts/refs/heads/main/Sea%202.txt"
+local scriptUrl1 = "https://raw.githubusercontent.com/by-titan/Scripts/refs/heads/main/Sea1"
+local scriptUrl2 = "https://raw.githubusercontent.com/by-titan/Scripts/refs/heads/main/Sea2"
 
 createGui(scriptUrl1, scriptUrl2)
