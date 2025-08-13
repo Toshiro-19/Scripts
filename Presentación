@@ -1,0 +1,544 @@
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Crear ScreenGui principal
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TitanPresentationUltra"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = playerGui
+
+-- Frame principal con gradiente dinámico mejorado
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(1, 0, 1, 0)
+mainFrame.Position = UDim2.new(0, 0, 0, 0)
+mainFrame.BackgroundColor3 = Color3.fromRGB(8, 12, 25)
+mainFrame.BorderSizePixel = 0
+mainFrame.Parent = screenGui
+
+-- Gradiente de fondo ULTRA DINÁMICO
+local gradient = Instance.new("UIGradient")
+gradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 144, 255)), -- Azul cielo vibrante
+    ColorSequenceKeypoint.new(0.25, Color3.fromRGB(65, 105, 225)), -- Azul real
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(25, 25, 112)), -- Azul medianoche
+    ColorSequenceKeypoint.new(0.75, Color3.fromRGB(72, 61, 139)), -- Azul pizarra
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 20)) -- Negro azulado
+})
+gradient.Rotation = 45
+gradient.Parent = mainFrame
+
+-- ✨ SISTEMA DE PARTÍCULAS MEJORADO ✨
+local particlesFrame = Instance.new("Frame")
+particlesFrame.Name = "ParticlesFrame"
+particlesFrame.Size = UDim2.new(1, 0, 1, 0)
+particlesFrame.BackgroundTransparency = 1
+particlesFrame.Parent = mainFrame
+
+-- Partículas con efectos múltiples
+local function createEnhancedParticle()
+    local particle = Instance.new("Frame")
+    particle.Size = UDim2.new(0, math.random(1, 4), 0, math.random(1, 4))
+    particle.Position = UDim2.new(math.random(), 0, 1.2, 0)
+    
+    -- Colores azules variados
+    local blueColors = {
+        Color3.fromRGB(30, 144, 255),
+        Color3.fromRGB(65, 105, 225),
+        Color3.fromRGB(100, 149, 237),
+        Color3.fromRGB(135, 206, 250),
+        Color3.fromRGB(70, 130, 180)
+    }
+    particle.BackgroundColor3 = blueColors[math.random(1, #blueColors)]
+    particle.BorderSizePixel = 0
+    particle.Parent = particlesFrame
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = particle
+    
+    -- Efecto de brillo en partículas
+    local glow = Instance.new("UIStroke")
+    glow.Color = particle.BackgroundColor3
+    glow.Thickness = 1
+    glow.Transparency = 0.3
+    glow.Parent = particle
+    
+    -- Animación avanzada con múltiples efectos
+    local duration = math.random(4, 8)
+    local tweenInfo = TweenInfo.new(
+        duration,
+        Enum.EasingStyle.Sine,
+        Enum.EasingDirection.InOut,
+        0,
+        false,
+        0
+    )
+    
+    local tween = TweenService:Create(particle, tweenInfo, {
+        Position = UDim2.new(math.random(), 0, -0.2, 0),
+        Rotation = math.random(-360, 360),
+        Size = UDim2.new(0, 1, 0, 1),
+        BackgroundTransparency = 1
+    })
+    
+    -- Efecto de pulsación
+    local pulseTweenInfo = TweenInfo.new(0.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, 0)
+    local pulseTween = TweenService:Create(glow, pulseTweenInfo, {
+        Transparency = 0.8
+    })
+    
+    tween:Play()
+    pulseTween:Play()
+    
+    tween.Completed:Connect(function()
+        pulseTween:Cancel()
+        particle:Destroy()
+    end)
+end
+
+-- 🌟 PARTÍCULAS ESTELARES DE FONDO 🌟
+local function createStarParticle()
+    local star = Instance.new("Frame")
+    star.Size = UDim2.new(0, 2, 0, 2)
+    star.Position = UDim2.new(math.random(), 0, math.random(), 0)
+    star.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    star.BorderSizePixel = 0
+    star.BackgroundTransparency = math.random(30, 70) / 100
+    star.Parent = particlesFrame
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = star
+    
+    -- Parpadeo de estrellas
+    local twinkleInfo = TweenInfo.new(math.random(1, 3), Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, 0)
+    local twinkleTween = TweenService:Create(star, twinkleInfo, {
+        BackgroundTransparency = math.random(80, 95) / 100
+    })
+    
+    twinkleTween:Play()
+    
+    -- Eliminar después de un tiempo
+    game:GetService("Debris"):AddItem(star, 12)
+end
+
+-- Generar partículas mejoradas
+local particleConnection
+particleConnection = RunService.Heartbeat:Connect(function()
+    if math.random() < 0.025 then
+        createEnhancedParticle()
+    end
+    if math.random() < 0.008 then
+        createStarParticle()
+    end
+end)
+
+-- 💫 TÍTULO PRINCIPAL CON EFECTOS ÉPICOS 💫
+local titleFrame = Instance.new("Frame")
+titleFrame.Name = "TitleFrame"
+titleFrame.Size = UDim2.new(0.85, 0, 0, 130)
+titleFrame.Position = UDim2.new(0.5, 0, 0.5, -90)
+titleFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+titleFrame.BackgroundTransparency = 1
+titleFrame.Parent = mainFrame
+
+-- MÚLTIPLES CAPAS DE BRILLO ÉPICO
+local glowFrame1 = Instance.new("Frame")
+glowFrame1.Name = "GlowFrame1"
+glowFrame1.Size = UDim2.new(1.8, 0, 1.8, 0)
+glowFrame1.Position = UDim2.new(-0.4, 0, -0.4, 0)
+glowFrame1.BackgroundColor3 = Color3.fromRGB(30, 144, 255)
+glowFrame1.BackgroundTransparency = 0.7
+glowFrame1.Parent = titleFrame
+
+local glowCorner1 = Instance.new("UICorner")
+glowCorner1.CornerRadius = UDim.new(0.5, 0)
+glowCorner1.Parent = glowFrame1
+
+local glowFrame2 = Instance.new("Frame")
+glowFrame2.Name = "GlowFrame2"
+glowFrame2.Size = UDim2.new(1.4, 0, 1.4, 0)
+glowFrame2.Position = UDim2.new(-0.2, 0, -0.2, 0)
+glowFrame2.BackgroundColor3 = Color3.fromRGB(65, 105, 225)
+glowFrame2.BackgroundTransparency = 0.6
+glowFrame2.Parent = titleFrame
+
+local glowCorner2 = Instance.new("UICorner")
+glowCorner2.CornerRadius = UDim.new(0.5, 0)
+glowCorner2.Parent = glowFrame2
+
+-- Título principal ULTRA ESTILIZADO
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "TitleLabel"
+titleLabel.Size = UDim2.new(1, 0, 1, 0)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "TITÁN"
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextScaled = true
+titleLabel.Font = Enum.Font.GothamBold
+titleLabel.ZIndex = 10
+titleLabel.Parent = titleFrame
+
+-- Gradiente azul espectacular
+local titleGradient = Instance.new("UIGradient")
+titleGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(135, 206, 250)),
+    ColorSequenceKeypoint.new(0.3, Color3.fromRGB(30, 144, 255)),
+    ColorSequenceKeypoint.new(0.7, Color3.fromRGB(255, 255, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 149, 237))
+})
+titleGradient.Parent = titleLabel
+
+-- Stroke múltiple para máximo impacto
+local titleStroke = Instance.new("UIStroke")
+titleStroke.Color = Color3.fromRGB(0, 0, 50)
+titleStroke.Thickness = 6
+titleStroke.Parent = titleLabel
+
+-- 🎨 SUBTÍTULO MEJORADO 🎨
+local subtitleFrame = Instance.new("Frame")
+subtitleFrame.Name = "SubtitleFrame"
+subtitleFrame.Size = UDim2.new(0.6, 0, 0, 38)
+subtitleFrame.Position = UDim2.new(0.5, 0, 0.5, 5)
+subtitleFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+subtitleFrame.BackgroundTransparency = 1
+subtitleFrame.Parent = mainFrame
+
+local subtitleLabel = Instance.new("TextLabel")
+subtitleLabel.Name = "SubtitleLabel"
+subtitleLabel.Size = UDim2.new(1, 0, 1, 0)
+subtitleLabel.BackgroundTransparency = 1
+subtitleLabel.Text = "by titan"
+subtitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+subtitleLabel.TextScaled = true
+subtitleLabel.Font = Enum.Font.GothamSemibold
+subtitleLabel.ZIndex = 5
+subtitleLabel.Parent = subtitleFrame
+
+-- Gradiente azul para subtítulo
+local subtitleGradient = Instance.new("UIGradient")
+subtitleGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 130, 180)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(30, 144, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 149, 237))
+})
+subtitleGradient.Parent = subtitleLabel
+
+local subtitleStroke = Instance.new("UIStroke")
+subtitleStroke.Color = Color3.fromRGB(0, 0, 30)
+subtitleStroke.Thickness = 2
+subtitleStroke.Parent = subtitleLabel
+
+-- 🔥 BARRA DE CARGA ULTRA PREMIUM 🔥
+local loadingFrame = Instance.new("Frame")
+loadingFrame.Name = "LoadingFrame"
+loadingFrame.Size = UDim2.new(0.75, 0, 0, 5)
+loadingFrame.Position = UDim2.new(0.5, 0, 0.65, 0)
+loadingFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
+loadingFrame.BorderSizePixel = 0
+loadingFrame.Parent = mainFrame
+
+local loadingCorner = Instance.new("UICorner")
+loadingCorner.CornerRadius = UDim.new(0, 10)
+loadingCorner.Parent = loadingFrame
+
+-- Efecto de brillo en la barra contenedora
+local loadingGlow = Instance.new("UIStroke")
+loadingGlow.Color = Color3.fromRGB(30, 144, 255)
+loadingGlow.Thickness = 1
+loadingGlow.Transparency = 0.3
+loadingGlow.Parent = loadingFrame
+
+local loadingBar = Instance.new("Frame")
+loadingBar.Name = "LoadingBar"
+loadingBar.Size = UDim2.new(0, 0, 1, 0)
+loadingBar.Position = UDim2.new(0, 0, 0, 0)
+loadingBar.BackgroundColor3 = Color3.fromRGB(30, 144, 255)
+loadingBar.BorderSizePixel = 0
+loadingBar.Parent = loadingFrame
+
+local barCorner = Instance.new("UICorner")
+barCorner.CornerRadius = UDim.new(0, 10)
+barCorner.Parent = loadingBar
+
+-- Gradiente azul para la barra
+local barGradient = Instance.new("UIGradient")
+barGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(30, 144, 255)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(65, 105, 225)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 149, 237))
+})
+barGradient.Parent = loadingBar
+
+-- Brillo animado en la barra
+local barGlow = Instance.new("UIStroke")
+barGlow.Color = Color3.fromRGB(135, 206, 250)
+barGlow.Thickness = 2
+barGlow.Transparency = 0.2
+barGlow.Parent = loadingBar
+
+-- 📝 TEXTO DE CARGA MEJORADO 📝
+local loadingText = Instance.new("TextLabel")
+loadingText.Name = "LoadingText"
+loadingText.Size = UDim2.new(0.6, 0, 0, 28)
+loadingText.Position = UDim2.new(0.5, 0, 0.72, 0)
+loadingText.AnchorPoint = Vector2.new(0.5, 0.5)
+loadingText.BackgroundTransparency = 1
+loadingText.Text = "Cargando..."
+loadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
+loadingText.TextScaled = true
+loadingText.Font = Enum.Font.GothamMedium
+loadingText.Parent = mainFrame
+
+local loadingTextGradient = Instance.new("UIGradient")
+loadingTextGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(200, 200, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(100, 149, 237))
+})
+loadingTextGradient.Parent = loadingText
+
+-- ⚡ ANIMACIONES CINEMATOGRÁFICAS ÉPICAS ⚡
+
+-- 1. Entrada explosiva del título
+titleLabel.TextTransparency = 1
+titleLabel.Position = UDim2.new(0, 0, -2, 0)
+titleLabel.Rotation = -45
+titleLabel.Size = UDim2.new(0.3, 0, 0.3, 0)
+
+local titleExplosionInfo = TweenInfo.new(2, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0.3)
+local titleExplosionTween = TweenService:Create(titleLabel, titleExplosionInfo, {
+    Position = UDim2.new(0, 0, 0, 0),
+    TextTransparency = 0,
+    Rotation = 0,
+    Size = UDim2.new(1, 0, 1, 0)
+})
+
+-- 2. Ondas de choque múltiples
+local function createShockwave(delay)
+    wait(delay)
+    local shockwave = Instance.new("Frame")
+    shockwave.Size = UDim2.new(0, 0, 0, 0)
+    shockwave.Position = UDim2.new(0.5, 0, 0.5, 0)
+    shockwave.AnchorPoint = Vector2.new(0.5, 0.5)
+    shockwave.BackgroundColor3 = Color3.fromRGB(30, 144, 255)
+    shockwave.BackgroundTransparency = 0.3
+    shockwave.BorderSizePixel = 0
+    shockwave.Parent = titleFrame
+    
+    local shockCorner = Instance.new("UICorner")
+    shockCorner.CornerRadius = UDim.new(1, 0)
+    shockCorner.Parent = shockwave
+    
+    local shockInfo = TweenInfo.new(1.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out, 0, false, 0)
+    local shockTween = TweenService:Create(shockwave, shockInfo, {
+        Size = UDim2.new(8, 0, 8, 0),
+        BackgroundTransparency = 1
+    })
+    
+    shockTween:Play()
+    shockTween.Completed:Connect(function()
+        shockwave:Destroy()
+    end)
+end
+
+-- 3. Brillos pulsantes múltiples
+local glowPulseInfo1 = TweenInfo.new(1.5, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, 0)
+local glowPulseTween1 = TweenService:Create(glowFrame1, glowPulseInfo1, {
+    Size = UDim2.new(2.2, 0, 2.2, 0),
+    Position = UDim2.new(-0.6, 0, -0.6, 0),
+    BackgroundTransparency = 0.9,
+    Rotation = 180
+})
+
+local glowPulseInfo2 = TweenInfo.new(2.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, 0.5)
+local glowPulseTween2 = TweenService:Create(glowFrame2, glowPulseInfo2, {
+    Size = UDim2.new(1.8, 0, 1.8, 0),
+    Position = UDim2.new(-0.4, 0, -0.4, 0),
+    BackgroundTransparency = 0.85,
+    Rotation = -180
+})
+
+-- 4. Entrada deslizante del subtítulo con rebote
+subtitleLabel.TextTransparency = 1
+subtitleLabel.Position = UDim2.new(2, 0, 0, 0)
+
+local subtitleSlideInfo = TweenInfo.new(1.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out, 0, false, 2.5)
+local subtitleSlideTween = TweenService:Create(subtitleLabel, subtitleSlideInfo, {
+    Position = UDim2.new(0, 0, 0, 0),
+    TextTransparency = 0
+})
+
+-- 5. Barra de carga con efectos avanzados
+local loadingBarInfo = TweenInfo.new(3.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out, 0, false, 2.8)
+local loadingBarTween = TweenService:Create(loadingBar, loadingBarInfo, {
+    Size = UDim2.new(1, 0, 1, 0)
+})
+
+-- Efecto de brillo siguiendo la barra
+local function animateBarGlow()
+    local glowPulseInfo = TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, 0)
+    local glowPulseTween = TweenService:Create(barGlow, glowPulseInfo, {
+        Thickness = 4,
+        Transparency = 0.1
+    })
+    glowPulseTween:Play()
+    return glowPulseTween
+end
+
+-- 6. Gradiente de fondo ultra dinámico
+local gradientRotateInfo = TweenInfo.new(8, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1, true, 0)
+local gradientRotateTween = TweenService:Create(gradient, gradientRotateInfo, {
+    Rotation = 405
+})
+
+-- 7. Gradiente del título animado
+local titleGradientInfo = TweenInfo.new(3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true, 0)
+local titleGradientTween = TweenService:Create(titleGradient, titleGradientInfo, {
+    Rotation = 90
+})
+
+-- ⭐ EJECUTAR TODAS LAS ANIMACIONES ⭐
+titleExplosionTween:Play()
+glowPulseTween1:Play()
+glowPulseTween2:Play()
+subtitleSlideTween:Play()
+loadingBarTween:Play()
+gradientRotateTween:Play()
+titleGradientTween:Play()
+
+-- Efectos especiales retrasados
+spawn(function()
+    createShockwave(1.2)
+    createShockwave(1.8)
+    createShockwave(2.4)
+    animateBarGlow()
+end)
+
+-- 🎭 SISTEMA DE TEXTO DINÁMICO MEJORADO 🎭
+local loadingTexts = {
+    "Iniciando Titán...",
+    "Cargando sistemas...",
+    "Optimizando interfaz...",
+    "Aplicando efectos...",
+    "Sincronizando datos...",
+    "Finalizando carga...",
+    "¡Titán listo!"
+}
+local textIndex = 1
+
+local function updateLoadingTextWithEffect()
+    -- Efecto de desvanecimiento hacia fuera
+    local fadeOutInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In, 0, false, 0)
+    local fadeOutTween = TweenService:Create(loadingText, fadeOutInfo, {
+        TextTransparency = 1,
+        Position = UDim2.new(0.5, 0, 0.74, 0)
+    })
+    
+    fadeOutTween:Play()
+    fadeOutTween.Completed:Connect(function()
+        loadingText.Text = loadingTexts[textIndex]
+        textIndex = textIndex + 1
+        if textIndex > #loadingTexts then
+            textIndex = 1
+        end
+        
+        -- Efecto de desvanecimiento hacia adentro
+        local fadeInInfo = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out, 0, false, 0)
+        local fadeInTween = TweenService:Create(loadingText, fadeInInfo, {
+            TextTransparency = 0,
+            Position = UDim2.new(0.5, 0, 0.72, 0)
+        })
+        fadeInTween:Play()
+    end)
+end
+
+-- Cambiar texto con efectos cada 1.2 segundos
+local textTimer = 0
+local textUpdateConnection
+textUpdateConnection = RunService.Heartbeat:Connect(function(deltaTime)
+    textTimer = textTimer + deltaTime
+    if textTimer >= 1.2 then
+        updateLoadingTextWithEffect()
+        textTimer = 0
+    end
+end)
+
+-- 🌟 FUNCIÓN DE CIERRE CINEMATOGRÁFICO 🌟
+local function closePresentationCinematic()
+    -- Detener todas las conexiones
+    if particleConnection then particleConnection:Disconnect() end
+    if textUpdateConnection then textUpdateConnection:Disconnect() end
+    
+    -- Crear efecto de implosión épica
+    local implosionInfo = TweenInfo.new(2.5, Enum.EasingStyle.Back, Enum.EasingDirection.In, 0, false, 0)
+    
+    -- Título implosiona hacia el centro
+    local titleImplosion = TweenService:Create(titleLabel, implosionInfo, {
+        Size = UDim2.new(0, 0, 0, 0),
+        Rotation = 720,
+        TextTransparency = 1
+    })
+    
+    -- Subtítulo se desvanece lateralmente
+    local subtitleExit = TweenService:Create(subtitleLabel, implosionInfo, {
+        Position = UDim2.new(-2, 0, 0, 0),
+        TextTransparency = 1,
+        Rotation = -180
+    })
+    
+    -- Efecto final de toda la interfaz
+    local finalFade = TweenService:Create(mainFrame, TweenInfo.new(3, Enum.EasingStyle.Exponential, Enum.EasingDirection.In), {
+        BackgroundTransparency = 1
+    })
+    
+    titleImplosion:Play()
+    subtitleExit:Play()
+    finalFade:Play()
+    
+    -- Eliminar después de la animación
+    finalFade.Completed:Connect(function()
+        screenGui:Destroy()
+    end)
+end
+
+-- ⏰ Cerrar después de 9 segundos para disfrutar todas las animaciones
+wait(9)
+closePresentationCinematic()
+
+-- 🚀 EFECTOS FINALES ADICIONALES 🚀
+
+-- Lluvia de partículas especiales al final
+spawn(function()
+    wait(6)
+    for i = 1, 20 do
+        local specialParticle = Instance.new("Frame")
+        specialParticle.Size = UDim2.new(0, 6, 0, 6)
+        specialParticle.Position = UDim2.new(0.5, math.random(-100, 100), 0, -10)
+        specialParticle.BackgroundColor3 = Color3.fromRGB(30, 144, 255)
+        specialParticle.BorderSizePixel = 0
+        specialParticle.Parent = particlesFrame
+        
+        local specialCorner = Instance.new("UICorner")
+        specialCorner.CornerRadius = UDim.new(1, 0)
+        specialCorner.Parent = specialParticle
+        
+        local specialInfo = TweenInfo.new(2, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out, 0, false, i * 0.1)
+        local specialTween = TweenService:Create(specialParticle, specialInfo, {
+            Position = UDim2.new(math.random(), 0, 1.2, 0),
+            BackgroundTransparency = 1,
+            Rotation = 360
+        })
+        
+        specialTween:Play()
+        wait(0.05)
+    end
+end)
