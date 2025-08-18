@@ -65,7 +65,7 @@ local function createGui(scriptUrl1, scriptUrl2)
         pcall(function()
             loadstring(game:HttpGet(scriptUrl1, true))()
         end)
-        statusLabel.Text = "¡Listo!"
+        screenGui:Destroy() -- 🔹 Eliminar interfaz después de ejecutar
     end)
 
     -- Botón Sea 2
@@ -88,7 +88,7 @@ local function createGui(scriptUrl1, scriptUrl2)
         pcall(function()
             loadstring(game:HttpGet(scriptUrl2, true))()
         end)
-        statusLabel.Text = "¡Listo!"
+        screenGui:Destroy() -- 🔹 Eliminar interfaz después de ejecutar
     end)
 end
 
