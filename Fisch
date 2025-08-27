@@ -4,13 +4,14 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 local function createGui(scriptUrl1, scriptUrl2)
     local screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "ToshiXGui"
+    screenGui.Name = "ToshiroGui"
     screenGui.Parent = PlayerGui
     screenGui.ResetOnSpawn = false
 
+    -- Frame más pequeño y centrado
     local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 350, 0, 220)
-    frame.Position = UDim2.new(0.5, -175, 0.5, -110)
+    frame.Size = UDim2.new(0, 280, 0, 160)
+    frame.Position = UDim2.new(0.5, -140, 0.5, -80)
     frame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
     frame.BorderSizePixel = 0
     frame.Parent = screenGui
@@ -25,33 +26,37 @@ local function createGui(scriptUrl1, scriptUrl2)
     corner.CornerRadius = UDim.new(0, 12)
     corner.Parent = frame
 
+    -- Título "Toshiro" centrado en la parte superior
     local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(0, 200, 0, 40)
-    title.Position = UDim2.new(0.5, -100, 0, 10)
-    title.Text = "Toshi X"
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.Position = UDim2.new(0, 0, 0, 10)
+    title.Text = "Toshiro"
     title.Font = Enum.Font.GothamBold
     title.TextSize = 24
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
     title.BackgroundTransparency = 1
+    title.TextXAlignment = Enum.TextXAlignment.Center
     title.Parent = frame
 
+    -- Label de estado en la parte inferior
     local statusLabel = Instance.new("TextLabel")
-    statusLabel.Size = UDim2.new(0, 260, 0, 20)
-    statusLabel.Position = UDim2.new(0.5, -130, 0.9, 0)
+    statusLabel.Size = UDim2.new(1, -20, 0, 20)
+    statusLabel.Position = UDim2.new(0, 10, 1, -30)
     statusLabel.Text = ""
     statusLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
     statusLabel.BackgroundTransparency = 1
     statusLabel.Font = Enum.Font.SourceSansBold
     statusLabel.TextScaled = true
+    statusLabel.TextXAlignment = Enum.TextXAlignment.Center
     statusLabel.Parent = frame
 
-    -- Botón Sea 1
+    -- Botón Sea 1 - posicionado debajo del título
     local button1 = Instance.new("TextButton")
-    button1.Size = UDim2.new(0, 120, 0, 35)
-    button1.Position = UDim2.new(0.5, -130, 0.7, 10)
+    button1.Size = UDim2.new(0, 100, 0, 30)
+    button1.Position = UDim2.new(0.5, -110, 0, 60)
     button1.Text = "Sea 1"
     button1.Font = Enum.Font.GothamBold
-    button1.TextSize = 16
+    button1.TextSize = 14
     button1.BackgroundColor3 = Color3.fromRGB(0, 140, 220)
     button1.TextColor3 = Color3.fromRGB(255, 255, 255)
     button1.Parent = frame
@@ -65,16 +70,16 @@ local function createGui(scriptUrl1, scriptUrl2)
         pcall(function()
             loadstring(game:HttpGet(scriptUrl1, true))()
         end)
-        screenGui:Destroy() -- 🔹 Eliminar interfaz después de ejecutar
+        screenGui:Destroy() -- Eliminar interfaz después de ejecutar
     end)
 
-    -- Botón Sea 2
+    -- Botón Sea 2 - posicionado debajo del título
     local button2 = Instance.new("TextButton")
-    button2.Size = UDim2.new(0, 120, 0, 35)
-    button2.Position = UDim2.new(0.5, 10, 0.7, 10)
+    button2.Size = UDim2.new(0, 100, 0, 30)
+    button2.Position = UDim2.new(0.5, 10, 0, 60)
     button2.Text = "Sea 2"
     button2.Font = Enum.Font.GothamBold
-    button2.TextSize = 16
+    button2.TextSize = 14
     button2.BackgroundColor3 = Color3.fromRGB(0, 140, 220)
     button2.TextColor3 = Color3.fromRGB(255, 255, 255)
     button2.Parent = frame
@@ -88,12 +93,11 @@ local function createGui(scriptUrl1, scriptUrl2)
         pcall(function()
             loadstring(game:HttpGet(scriptUrl2, true))()
         end)
-        screenGui:Destroy() -- 🔹 Eliminar interfaz después de ejecutar
+        screenGui:Destroy() -- Eliminar interfaz después de ejecutar
     end)
 end
 
 -- URLs de los scripts
-local scriptUrl1 = "https://raw.githubusercontent.com/by-titan/Scripts/refs/heads/main/Sea1"
-local scriptUrl2 = "https://raw.githubusercontent.com/by-titan/Scripts/refs/heads/main/Sea2"
-
+local scriptUrl1 = "https://raw.githubusercontent.com/Toshiro-19/Scripts/refs/heads/main/Sea1"
+local scriptUrl2 = "https://raw.githubusercontent.com/Toshiro-19/Scripts/refs/heads/main/Sea2"
 createGui(scriptUrl1, scriptUrl2)
