@@ -1,150 +1,287 @@
-local P, S, T = game:GetService("Players"), game:GetService("UserInputService"), game:GetService("TweenService")
-local L = P.LocalPlayer
-local G = L:WaitForChild("PlayerGui")
+-- ==============================================================================
+-- FLUXY HUB X - ULTRA DYNAMIC & RESPONSIVE EDITION
+-- Diseño AAA, Interfaz Viva y Adaptable a Pantallas
+-- ==============================================================================
 
--- Configuración de Colores y Enlaces
-local C = {
-    PRIMARY = Color3.fromRGB(12, 12, 20),
-    SECONDARY = Color3.fromRGB(22, 22, 32),
-    ACCENT = Color3.fromRGB(0, 180, 255),
-    TEXT = Color3.fromRGB(255, 255, 255),
-    CLOSE = Color3.fromRGB(255, 60, 60)
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+local TargetGui = LocalPlayer:WaitForChild("PlayerGui") 
+
+-- ================= CONFIGURACIÓN DE TEMA (Premium Alive) =================
+local THEME = {
+    BgStart = Color3.fromRGB(13, 17, 25),          -- Azul muy oscuro
+    BgEnd = Color3.fromRGB(20, 24, 35),            -- Tono ligeramente más claro
+    Surface = Color3.fromRGB(25, 30, 42),          -- Superficie de botones
+    SurfaceHover = Color3.fromRGB(35, 42, 58),     -- Brillo al pasar el cursor
+    Accent = Color3.fromRGB(0, 195, 255),          -- Cian Neón Vibrante
+    AccentGlow = Color3.fromRGB(0, 150, 255),      -- Sombra del Cian
+    Text = Color3.fromRGB(250, 250, 255),          -- Blanco puro
+    SubText = Color3.fromRGB(150, 160, 175),       -- Gris suave
+    Danger = Color3.fromRGB(255, 75, 75),          -- Rojo vibrante
+    Border = Color3.fromRGB(50, 58, 75)            -- Borde sutil
 }
 
-local DISCORD_INVITE = "https://discord.gg/X82rc5jbSH" -- Tu nuevo código aquí
+local DISCORD_INVITE = "https://discord.gg/X82rc5jbSH"
 local BASE_URL = "https://raw.githubusercontent.com/Toshiro-19/Scripts/refs/heads/main/"
 
-if G:FindFirstChild("FluxyHubX") then G.FluxyHubX:Destroy() end
+if TargetGui:FindFirstChild("FluxyHubX") then TargetGui.FluxyHubX:Destroy() end
+
+local function createTween(object, properties, duration)
+    return TweenService:Create(object, TweenInfo.new(duration or 0.25, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), properties)
+end
+
+-- ================= CONSTRUCCIÓN DE INTERFAZ =================
 
 local GUI = Instance.new("ScreenGui")
 GUI.Name = "FluxyHubX"
 GUI.ResetOnSpawn = false
-GUI.Parent = G
+GUI.DisplayOrder = 999
+GUI.Parent = TargetGui
 
--- Contenedor Principal con diseño estilizado
+-- Contenedor Maestro (Responsivo)
 local Main = Instance.new("Frame")
 Main.Name = "MainFrame"
-Main.Size = UDim2.new(0, 420, 0, 340)
-Main.Position = UDim2.new(0.5, -210, 0.5, -170)
-Main.BackgroundColor3 = C.PRIMARY
+-- Usamos Scale (0.4 y 0.5) para que se adapte al tamaño de la pantalla
+Main.Size = UDim2.new(0.4, 0, 0.5, 0) 
+Main.Position = UDim2.new(0.5, 0, 0.5, 0)
+Main.AnchorPoint = Vector2.new(0.5, 0.5) -- Centrado perfecto
+Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- Necesario para que el gradiente funcione
 Main.BorderSizePixel = 0
+Main.ClipsDescendants = true
 Main.Parent = GUI
 
-Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 16)
+-- Límites de tamaño (Evita que sea enano en celular o gigante en PC)
+local SizeConstraint = Instance.new("UISizeConstraint")
+SizeConstraint.MinSize = Vector2.new(380, 320)
+SizeConstraint.MaxSize = Vector2.new(650, 480)
+SizeConstraint.Parent = Main
 
-local Stroke = Instance.new("UIStroke", Main)
-Stroke.Thickness = 2
-Stroke.Color = C.SECONDARY
-Stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+Instance.new("UICorner", Main).CornerRadius = UDim.new(0, 12)
 
--- Barra Superior
+local MainStroke = Instance.new("UIStroke", Main)
+MainStroke.Thickness = 1.5
+MainStroke.Color = THEME.Border
+MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+-- Fondo Dinámico (Efecto "Respiración")
+local MainGradient = Instance.new("UIGradient")
+MainGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, THEME.BgStart),
+    ColorSequenceKeypoint.new(1, THEME.BgEnd)
+})
+MainGradient.Rotation = 45
+MainGradient.Parent = Main
+
+-- Animación infinita del fondo
+task.spawn(function()
+    while Main.Parent do
+        local gradTween = TweenService:Create(MainGradient, TweenInfo.new(4, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+            Rotation = 135
+        })
+        gradTween:Play()
+        task.wait(8)
+    end
+end)
+
+-- ================= BARRA SUPERIOR =================
 local Header = Instance.new("Frame")
-Header.Size = UDim2.new(1, 0, 0, 45)
-Header.BackgroundColor3 = C.SECONDARY
+Header.Size = UDim2.new(1, 0, 0, 50)
+Header.BackgroundTransparency = 1
 Header.BorderSizePixel = 0
 Header.Parent = Main
-Instance.new("UICorner", Header).CornerRadius = UDim.new(0, 16)
 
--- Título con efecto de brillo
+local HeaderLine = Instance.new("Frame")
+HeaderLine.Size = UDim2.new(1, 0, 0, 1)
+HeaderLine.Position = UDim2.new(0, 0, 1, 0)
+HeaderLine.BackgroundColor3 = THEME.Border
+HeaderLine.BorderSizePixel = 0
+HeaderLine.Parent = Header
+
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -60, 1, 0)
+Title.Size = UDim2.new(1, -80, 1, 0)
 Title.Position = UDim2.new(0, 20, 0, 0)
 Title.BackgroundTransparency = 1
 Title.Text = "Fluxy Hub X"
-Title.TextColor3 = C.ACCENT
+Title.TextColor3 = THEME.Text
 Title.Font = Enum.Font.GothamBold
 Title.TextSize = 18
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = Header
 
-local Close = Instance.new("TextButton")
-Close.Size = UDim2.new(0, 30, 0, 30)
-Close.Position = UDim2.new(1, -40, 0, 7)
-Close.BackgroundColor3 = C.CLOSE
-Close.Text = "×"
-Close.TextColor3 = C.TEXT
-Close.Font = Enum.Font.GothamBold
-Close.TextSize = 20
-Close.Parent = Header
-Instance.new("UICorner", Close).CornerRadius = UDim.new(0, 8)
+-- Botón de Cierre (Letra "X" segura para fuentes)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 0, 30)
+CloseBtn.Position = UDim2.new(1, -40, 0, 10)
+CloseBtn.BackgroundColor3 = THEME.BgStart
+CloseBtn.BackgroundTransparency = 0.5
+CloseBtn.Text = "X" -- Usamos "X" normal para que no se rompa el carácter
+CloseBtn.TextColor3 = THEME.SubText
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.TextSize = 14
+CloseBtn.AutoButtonColor = false
+CloseBtn.Parent = Header
 
--- Buscador de Scripts mejorado
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 8)
+local CloseStroke = Instance.new("UIStroke", CloseBtn)
+CloseStroke.Color = THEME.Border
+CloseStroke.Thickness = 1
+
+-- ================= BUSCADOR =================
+local SearchContainer = Instance.new("Frame")
+SearchContainer.Size = UDim2.new(1, -40, 0, 42)
+SearchContainer.Position = UDim2.new(0, 20, 0, 65)
+SearchContainer.BackgroundColor3 = THEME.Surface
+SearchContainer.BorderSizePixel = 0
+SearchContainer.Parent = Main
+
+Instance.new("UICorner", SearchContainer).CornerRadius = UDim.new(0, 8)
+local SearchStroke = Instance.new("UIStroke", SearchContainer)
+SearchStroke.Thickness = 1
+SearchStroke.Color = THEME.Border
+
+local SearchIcon = Instance.new("TextLabel")
+SearchIcon.Size = UDim2.new(0, 30, 1, 0)
+SearchIcon.Position = UDim2.new(0, 10, 0, 0)
+SearchIcon.BackgroundTransparency = 1
+SearchIcon.Text = "🔍"
+SearchIcon.TextColor3 = THEME.SubText
+SearchIcon.TextSize = 15
+SearchIcon.Parent = SearchContainer
+
 local Search = Instance.new("TextBox")
-Search.Size = UDim2.new(1, -40, 0, 35)
-Search.Position = UDim2.new(0, 20, 0, 60)
-Search.BackgroundColor3 = C.SECONDARY
-Search.PlaceholderText = "Escribe para buscar..."
+Search.Size = UDim2.new(1, -50, 1, 0)
+Search.Position = UDim2.new(0, 40, 0, 0)
+Search.BackgroundTransparency = 1
+Search.PlaceholderText = "Buscar scripts..."
 Search.Text = ""
-Search.TextColor3 = C.TEXT
-Search.PlaceholderColor3 = Color3.fromRGB(120, 120, 130)
-Search.Font = Enum.Font.Gotham
+Search.TextColor3 = THEME.Text
+Search.PlaceholderColor3 = THEME.SubText
+Search.Font = Enum.Font.GothamMedium
 Search.TextSize = 14
-Search.Parent = Main
-Instance.new("UICorner", Search).CornerRadius = UDim.new(0, 10)
+Search.TextXAlignment = Enum.TextXAlignment.Left
+Search.Parent = SearchContainer
 
--- Contenedor de lista (Scroll)
+-- ================= LISTA DE SCRIPTS =================
 local Content = Instance.new("ScrollingFrame")
-Content.Size = UDim2.new(1, -30, 1, -120)
-Content.Position = UDim2.new(0, 15, 0, 105)
+Content.Size = UDim2.new(1, -20, 1, -125)
+Content.Position = UDim2.new(0, 10, 0, 115)
 Content.BackgroundTransparency = 1
 Content.BorderSizePixel = 0
 Content.ScrollBarThickness = 3
-Content.ScrollBarImageColor3 = C.ACCENT
+Content.ScrollBarImageColor3 = THEME.Accent
 Content.AutomaticCanvasSize = Enum.AutomaticSize.Y
 Content.Parent = Main
 
+local Padding = Instance.new("UIPadding", Content)
+Padding.PaddingTop = UDim.new(0, 5)
+Padding.PaddingBottom = UDim.new(0, 10)
+Padding.PaddingLeft = UDim.new(0, 10)
+Padding.PaddingRight = UDim.new(0, 10)
+
 local Grid = Instance.new("UIGridLayout")
-Grid.CellSize = UDim2.new(0.5, -8, 0, 50)
-Grid.CellPadding = UDim2.new(0, 10, 0, 10)
+-- El ancho es relativo (48%) para que escale, el alto es fijo (45)
+Grid.CellSize = UDim2.new(0.48, 0, 0, 45) 
+Grid.CellPadding = UDim2.new(0.04, 0, 0, 12)
+Grid.SortOrder = Enum.SortOrder.LayoutOrder
 Grid.Parent = Content
 
--- Función para añadir botones dinámicamente
+-- ================= LÓGICA DE BOTONES DINÁMICOS =================
 local function NewButton(name, file, icon, isDiscord)
-    local Btn = Instance.new("TextButton")
-    Btn.Name = name:lower()
-    Btn.BackgroundColor3 = C.SECONDARY
-    Btn.Text = ""
-    Btn.Parent = Content
+    local BtnContainer = Instance.new("Frame")
+    BtnContainer.Name = name:lower()
+    BtnContainer.BackgroundColor3 = THEME.Surface
+    BtnContainer.Parent = Content
     
-    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 10)
-    local BStroke = Instance.new("UIStroke", Btn)
-    BStroke.Thickness = 1.5
-    BStroke.Color = Color3.fromRGB(40, 40, 50)
+    Instance.new("UICorner", BtnContainer).CornerRadius = UDim.new(0, 8)
+    local BStroke = Instance.new("UIStroke", BtnContainer)
+    BStroke.Thickness = 1
+    BStroke.Color = THEME.Border
+
+    local Btn = Instance.new("TextButton")
+    Btn.Size = UDim2.new(1, 0, 1, 0)
+    Btn.BackgroundTransparency = 1
+    Btn.Text = ""
+    Btn.Parent = BtnContainer
 
     local Lbl = Instance.new("TextLabel")
-    Lbl.Size = UDim2.new(1, 0, 1, 0)
+    Lbl.Size = UDim2.new(1, -15, 1, 0)
+    Lbl.Position = UDim2.new(0, 15, 0, 0)
     Lbl.BackgroundTransparency = 1
-    Lbl.Text = icon .. " " .. name
-    Lbl.TextColor3 = C.TEXT
-    Lbl.Font = Enum.Font.GothamSemibold
+    Lbl.Text = icon .. "   " .. name
+    Lbl.TextColor3 = THEME.Text
+    Lbl.Font = Enum.Font.GothamMedium
     Lbl.TextSize = 13
-    Lbl.Parent = Btn
+    Lbl.TextXAlignment = Enum.TextXAlignment.Left
+    Lbl.Parent = BtnContainer
 
-    -- Animaciones y Funciones
+    -- Animaciones de Vida (Hover y Click)
     Btn.MouseEnter:Connect(function()
-        T:Create(Btn, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(35, 35, 55)}):Play()
-        T:Create(BStroke, TweenInfo.new(0.3), {Color = C.ACCENT}):Play()
+        createTween(BtnContainer, {BackgroundColor3 = THEME.SurfaceHover}):Play()
+        createTween(BStroke, {Color = THEME.Accent, Thickness = 1.5}):Play()
     end)
+    
     Btn.MouseLeave:Connect(function()
-        T:Create(Btn, TweenInfo.new(0.3), {BackgroundColor3 = C.SECONDARY}):Play()
-        T:Create(BStroke, TweenInfo.new(0.3), {Color = Color3.fromRGB(40, 40, 50)}):Play()
+        createTween(BtnContainer, {BackgroundColor3 = THEME.Surface}):Play()
+        createTween(BStroke, {Color = THEME.Border, Thickness = 1}):Play()
+    end)
+
+    Btn.MouseButton1Down:Connect(function()
+        createTween(BtnContainer, {Size = UDim2.new(0.92, 0, 0.92, 0)}):Play()
+    end)
+
+    Btn.MouseButton1Up:Connect(function()
+        createTween(BtnContainer, {Size = UDim2.new(1, 0, 1, 0)}):Play()
     end)
 
     Btn.MouseButton1Click:Connect(function()
         if isDiscord then
-            setclipboard(DISCORD_INVITE) -- Copia el link al portapapeles
-            Lbl.Text = "✅ Link Copiado!"
-            task.wait(2)
-            Lbl.Text = icon .. " " .. name
+            if setclipboard then
+                setclipboard(DISCORD_INVITE)
+                Lbl.Text = "✅ Link Copiado!"
+                Lbl.TextColor3 = THEME.Accent
+                task.delay(2, function()
+                    if Lbl.Parent then
+                        Lbl.Text = icon .. "   " .. name
+                        Lbl.TextColor3 = THEME.Text
+                    end
+                end)
+            end
         elseif file ~= "" then
-            pcall(function() loadstring(game:HttpGet(BASE_URL .. file))() end)
+            local originalText = Lbl.Text
+            Lbl.Text = "⏳ Cargando..."
+            Lbl.TextColor3 = THEME.Accent
+            
+            task.spawn(function()
+                local success, err = pcall(function() 
+                    loadstring(game:HttpGet(BASE_URL .. file))() 
+                end)
+                
+                if success then
+                    Lbl.Text = "✅ Ejecutado"
+                    Lbl.TextColor3 = Color3.fromRGB(0, 255, 128)
+                else
+                    Lbl.Text = "❌ Error"
+                    Lbl.TextColor3 = THEME.Danger
+                    warn("Error en script: " .. tostring(err))
+                end
+                
+                task.wait(1.5)
+                if Lbl.Parent then
+                    Lbl.Text = originalText
+                    Lbl.TextColor3 = THEME.Text
+                end
+            end)
         end
     end)
 end
 
--- Tu lista de scripts (Cambia o agrega aquí)
+-- ================= INYECTAR SCRIPTS =================
 local Scripts = {
-    {n = "Discord", f = "", i = "📡", d = true},
+    {n = "Discord", f = "", i = "👾", d = true},
     {n = "Fisch", f = "Sea1", i = "🐟", d = false},
     {n = "Grow a Garden", f = "GrowToshi", i = "🌱", d = false},
     {n = "Rebirths", f = "RebirthsUltimate", i = "♻️", d = false},
@@ -152,33 +289,68 @@ local Scripts = {
     {n = "Others", f = "", i = "⚙️", d = false}
 }
 
-for _, s in pairs(Scripts) do NewButton(s.n, s.f, s.i, s.d) end
+for _, s in pairs(Scripts) do 
+    NewButton(s.n, s.f, s.i, s.d) 
+end
 
--- Buscador funcional
+-- ================= INTERACCIONES ADICIONALES =================
+Search.Focused:Connect(function()
+    createTween(SearchStroke, {Color = THEME.Accent}):Play()
+end)
+
+Search.FocusLost:Connect(function()
+    createTween(SearchStroke, {Color = THEME.Border}):Play()
+end)
+
 Search:GetPropertyChangedSignal("Text"):Connect(function()
     local text = Search.Text:lower()
-    for _, b in pairs(Content:GetChildren()) do
-        if b:IsA("TextButton") then
-            b.Visible = b.Name:find(text) ~= nil
+    for _, item in pairs(Content:GetChildren()) do
+        if item:IsA("Frame") then
+            item.Visible = item.Name:find(text) ~= nil
         end
     end
+    Content.CanvasPosition = Vector2.new(0, 0)
 end)
 
--- Sistema de arrastre suave
-local drag, input, start, pos
-Header.InputBegan:Connect(function(i)
-    if i.UserInputType == Enum.UserInputType.MouseButton1 then
-        drag = true
-        start = i.Position
-        pos = Main.Position
-    end
+CloseBtn.MouseEnter:Connect(function()
+    createTween(CloseBtn, {BackgroundColor3 = THEME.Danger, TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+    createTween(CloseStroke, {Color = THEME.Danger}):Play()
 end)
-S.InputChanged:Connect(function(i)
-    if drag and i.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = i.Position - start
-        Main.Position = UDim2.new(pos.X.Scale, pos.X.Offset + delta.X, pos.Y.Scale, pos.Y.Offset + delta.Y)
-    end
+CloseBtn.MouseLeave:Connect(function()
+    createTween(CloseBtn, {BackgroundColor3 = THEME.BgStart, TextColor3 = THEME.SubText}):Play()
+    createTween(CloseStroke, {Color = THEME.Border}):Play()
 end)
-S.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then drag = false end end)
 
-Close.MouseButton1Click:Connect(function() GUI:Destroy() end)
+CloseBtn.MouseButton1Click:Connect(function()
+    local exitTween = createTween(Main, {Size = UDim2.new(0, 0, 0, 0), Position = UDim2.new(0.5, 0, 0.45, 0)}, 0.4)
+    exitTween:Play()
+    exitTween.Completed:Connect(function() GUI:Destroy() end)
+end)
+
+-- ================= SISTEMA DE ARRASTRE =================
+local dragToggle, dragInput, dragStart, startPos
+Header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragToggle = true
+        dragStart = input.Position
+        startPos = Main.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragToggle = false end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if dragToggle and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        local delta = input.Position - dragStart
+        Main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Animación inicial tipo "Pop-up"
+Main.Size = UDim2.new(0.3, 0, 0.3, 0)
+Main.BackgroundTransparency = 1
+createTween(Main, {
+    Size = UDim2.new(0.4, 0, 0.5, 0),
+    BackgroundTransparency = 0
+}, 0.5):Play()
